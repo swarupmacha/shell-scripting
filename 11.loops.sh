@@ -4,12 +4,13 @@ userid=$(id -u)
 
 if [ $userid -ne 0 ]; then
     echo "please execute with root user acess"
-    ecit 1
+    exit 1
 fi
 
 
 for package in $@
 do 
+   dnf list installed $package
    if [ $? -ne 0 ]; then 
         echo "Installing $package ... FAILURE"
         exit 1
