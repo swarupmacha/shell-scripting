@@ -11,6 +11,10 @@ fi
 for package in $@
 do 
    dnf list installed $package
+   if [ $? -eq 0 ]; then
+        echo "$package is already installed"
+        continue
+   fi
    if [ $? -ne 0 ]; then 
         echo "Installing $package ... FAILURE"
         exit 1
