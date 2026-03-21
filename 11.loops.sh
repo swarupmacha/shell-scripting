@@ -1,9 +1,12 @@
 #!/bin/bash
 
-for i in {1..5}
-do
-    echo $i
-done
+userid=$(id -u)
+
+if [ $userid -ne 0 ]; then
+    echo "please execute with root user acess"
+    ecit 1
+fi
+
 
 for package in $@
 do 
