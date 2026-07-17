@@ -1,0 +1,29 @@
+---
+- name: Mongodb setup
+  hosts: mongodb
+  become: yes
+  tasks:
+  - name: copy mongo repo file from local
+    copy:
+      src: mongo.repo
+      dest: /etc/yum.repos.d/mongo.repo
+  
+  - name: isntalling mongo
+    dnf:
+      name: mongodb-org
+      state: present
+
+  - name: replace config file
+    replace:
+      path:  /etc/mongod.conf
+      regexp: '127.0.0.1'
+      replace: '0.0.0.0'
+  
+  - name: staring the mongo service
+    service: 
+      name: mongod
+      state: started
+      enabled: yes
+
+  
+
