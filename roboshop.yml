@@ -1,0 +1,30 @@
+---
+- name: create ec2 and Route 53 records
+  hosts: localhost
+  connection: local
+  vars:
+    sg_id: "sg-089e67667eb98e2e5"
+    ami_id: "ami-0220d79f3f480ecf5"
+    environments: dev
+    instances:
+    - mongodb
+    - catalogue
+  tasks:
+  - name: create an ec2 instances
+    amazon.aws.ec2_instance:
+      instance_type: "t2.micro"
+      security_group: "{{ sg_id }}"
+      image_id: "{{ ami_id }}"
+      name: "{{ item }}-{{ environments }}"
+      tags:
+        project: roboshop
+        Component: "{{ item }}"
+        Environment: "{{ environments }}"
+        Name: "{{ item }}- {{ environments }}"
+    loop: {{ instances }}
+    register: ec2_ouput
+
+  - name: prinitng the ec2-instance_type
+    debug:
+      msg: "{{ ec2_ouput }}"
+      
