@@ -21,7 +21,7 @@
         Component: "{{ item }}"
         Environment: "{{ environments }}"
         Name: "{{ item }}- {{ environments }}"
-    loop: {{ instances }}
+    loop: "{{ instances }}"
     register: ec2_ouput
 
   - name: prinitng the ec2-instance_type
