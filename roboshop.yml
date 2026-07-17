@@ -5,6 +5,7 @@
   vars:
     sg_id: "sg-089e67667eb98e2e5"
     ami_id: "ami-0220d79f3f480ecf5"
+    domain_name: swarupmacha.online
     environments: dev
     instances:
     - mongodb
