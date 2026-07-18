@@ -1,0 +1,53 @@
+---
+- name: setup user
+  hosts: user
+  become: yes
+  vars:
+    MONGODB_HOST: "mongodb-dev.swarupmacha.online"
+  tasks:
+  - name: disabling the node 20 version
+    command: dnf module disable nodejs -y
+  
+  - name: installing node js
+    dnf:
+      name: nodejs
+      state: present
+  
+  - name: creating system user
+    user:
+      name: roboshop
+      state: present
+      system: true
+      shell: /sbin/nologin
+      comment: "ROboshop system user"
+  
+  - name: create app directory
+    file:
+      path: /app
+      state: directory
+  
+  - name: downlaod user
+    get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip
+      dest: /tmp/user.zip
+
+  - name: unzip the file
+    unarchive:
+      src: /tmp/user.zip
+      dest: /app
+      remote_src: yes
+  
+  - name: install depencdiecs
+    npm:
+      path: /app
+  
+  - name: changes service file
+    copy:
+      src: user.service
+      dest: /etc/systemd/system/user.service
+  
+  - name: start user
+    ansible.builtin.service:
+      name: user
+      state: restarted
+      enabled: yes
