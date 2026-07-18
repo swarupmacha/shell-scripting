@@ -7,9 +7,18 @@
     ami_id: "ami-0220d79f3f480ecf5"
     domain_name: swarupmacha.online
     environments: dev
+    action: create
     instances:
     - mongodb
     - catalogue
+    - redis
+    - user
+    - cart
+    - mysql
+    - shipping
+    - frontend
+    - rabbitmq
+    - payment
   tasks:
   - name: create an ec2 instances
     amazon.aws.ec2_instance:
@@ -24,10 +33,12 @@
         Name: "{{ item }}- {{ environments }}"
     loop: "{{ instances }}"
     register: ec2_ouput
+    when: action == "create"
 
   - name: prinitng the ec2-instance_type
     debug:
       msg: "{{ ec2_ouput }}"
+    when: action == "create"
 
   - name: create route 53 records
     amazon.aws.route53:
@@ -38,4 +49,37 @@
       ttl: 1
       value: "{{ item.instances[0].private_ip_address}}"
       wait: true
-    loop: "{{ ec2_ouput.results }}"      
+    loop: "{{ ec2_ouput.results }}" 
+    when: action == "create"
+
+  - name: create route 53 records
+    amazon.aws.route53:
+      state: present
+      zone: "{{ domain_name }}"
+      record: "roboshop{{ item.item}}-{{ environments }}.{{ domain_name }}"
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].public_ip_address}}"
+      wait: true
+    loop: "{{ ec2_ouput.results }}"   
+    when: 
+    - item.item == "frontend"  
+    - action == "create" 
+
+  - name: deleting 53 route records
+    amazon.aws.route53:
+      state: absent
+      zone: "{{ domain_name }}"
+      record: "{{ item}}-{{ environments }}.{{ domain_name }}"
+      type: A
+      ttl: 1
+    loop: "{{  instances }}"
+    when: action == "destroy"
+
+  - name: deleting the instance_type
+    amazon.aws.ec2_instance
+      state: absent
+      name: "{{ item }}-{{ environments }}"
+    loop: "{{ instances }}" 
+    when: action == "destroy"
+    
