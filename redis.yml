@@ -1,0 +1,24 @@
+---
+- name: configure redis sevrer
+  hosts: localhost
+  become: yes
+  tasks:
+  - name: enabling rediss-7
+    command: dnf module enable redis:7 -y
+
+  - name: isnatlling redis
+    dnf:
+      - name: redis
+        state: present
+  
+  - name: changing config file
+    replace: 
+      regexp: 127.0.0.1
+      replace: 0.0.0.0
+      path: 127.0.0.1
+
+  - name: starting the redis
+    service:
+      name: redis
+      state: present
+      enabled: yes
