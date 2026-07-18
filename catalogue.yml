@@ -61,7 +61,8 @@
     register: catalogue_output
 
   - name: print the catalogue_output
-    debug: "{{ catalogue_output }}"
+    debug: 
+      msg: "{{ catalogue_output }}"
 
   - name: load the products
     ansible.builtin.shell: mongosh --host "{{ MONGODB_HOST }}" </app/db/master-data.js
