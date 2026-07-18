@@ -2,6 +2,8 @@
 - name: setup catalogue
   hosts: catalogue
   become: yes
+  vars:
+    MONGODB_HOST: "mongodb-dev.swarupmacha.online"
   tasks:
   - name: disabling the node 20 version
     command: dnf module disable nodejs -y
