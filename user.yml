@@ -42,7 +42,7 @@
       path: /app
   
   - name: changes service file
-    copy:
+    template:
       src: user.service
       dest: /etc/systemd/system/user.service
   
